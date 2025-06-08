@@ -1,10 +1,8 @@
-// Categories
+// All Categories
 const allCategories = [
   'Business','Economics','Entertainment','Finance','Health','Politics','Science',
   'Sports','Tech','Crime','Lifestyle','Automotive','Travel','Weather','General'
 ];
-
-const API_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJNYXJpYW1TaGluZHkiLCJqdGkiOiI2NWRlMmY3Yi0zNzhlLTRjMWUtYWViZS04ZWEyYjA0NTliNDAiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzQ5MzYwMzQ1LCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MjkxIiwiYXVkIjoiTXlTZWN1cmVkQVBJU1VzZXJzIn0.y59bXZAOaz74Wjk_1AYO2ayTqkQ01h0xA8DHDK7luqk';
 
 let expanded = false;
 let selectedCategory = null;
@@ -41,67 +39,31 @@ toggleBtn.onclick = () => {
   expanded = !expanded;
   renderCategories();
 };
-
-// Fetch & display
-// async function fetchNews() {
-//   loader.classList.remove('hidden');
-//   errorDiv.classList.add('hidden');
-//   newsList.innerHTML = '';
-
-//   const q = encodeURIComponent(searchInput.value.trim());
-  
-//   // Choose URL
-//   const base = selectedCategory
-//     ? 'https://localhost:7291/api/newsTwo/category/${encodeURIComponent(selectedCategory)}'
-//     : 'https://localhost:7291/api/newsTwo/all?pageSize=110&pageNumber=1';
-//   const url = new URL(base);
-//   if (selectedCategory) url.searchParams.set('category', selectedCategory);
-//   if (q) url.searchParams.set('q', q);
-
-//   try {
-//     const res  = await fetch(url);
-//     const data = await res.json();
-//     const articles = data.recommendations || [];
-
-//     // Simulate save to JSON file
-//     console.log('SAVE recommended_1.json →', { recommendations: articles });
-
-//     if (!articles.length) {
-//       newsList.innerHTML = '<li>No articles found.</li>';
-//     } else {
-//       articles.forEach(a => {
-//         const li = document.createElement('li');
-//         li.textContent = a.title;
-//         li.onclick = () => window.open(a.url, '_blank');
-//         newsList.appendChild(li);
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     errorDiv.classList.remove('hidden');
-//   } finally {
-//     loader.classList.add('hidden');
-//   }
-// }
+const API_TOKEN = "DKDU6nIVitZa9d6y85yTCs6htRzW9vKZ1BZJINtQoIM"
 async function fetchNews() {
   loader.classList.remove('hidden');
   errorDiv.classList.add('hidden');
   newsList.innerHTML = '';
 
   const q = encodeURIComponent(searchInput.value.trim());
-  
-  // Choose URL
-  const base = selectedCategory
-    ? 'https://localhost:7291/api/newsTwo/category/${encodeURIComponent(selectedCategory)}'
-    : 'https://localhost:7291/api/newsTwo/all?pageSize=110&pageNumber=1';
-  const url = new URL(base);
-  if (selectedCategory) url.searchParams.set('category', selectedCategory);
-  if (q) url.searchParams.set('q', q);
+  const query = q || selectedCategory || 'news';  // Fallback to 'news' if nothing selected
+
+  const url = new URL('https://v3-api.newscatcherapi.com/api/search');
+  url.searchParams.set('q', query);
+  url.searchParams.set('lang', 'en'); 
 
   try {
-    const res  = await fetch(url);
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'x-api-token': API_TOKEN
+      }
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
     const data = await res.json();
-    const articles = data.recommendations || [];
+    const articles = data.articles || [];
 
     if (!articles.length) {
       newsList.innerHTML = '<li>No articles found.</li>';
@@ -109,7 +71,7 @@ async function fetchNews() {
       articles.forEach(a => {
         const li = document.createElement('li');
         li.textContent = a.title;
-        li.onclick = () => window.open(a.url, '_blank');
+        li.onclick = () => window.open(a.link, '_blank');
         newsList.appendChild(li);
       });
     }
@@ -129,15 +91,3 @@ searchInput.addEventListener('keyup', e => {
 // Init
 renderCategories();
 fetchNews();
-
-
-
-
-
-
-
-
-
-
-
-
