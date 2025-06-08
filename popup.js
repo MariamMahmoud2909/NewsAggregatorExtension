@@ -6,6 +6,7 @@ const allCategories = [
 
 let expanded = false;
 let selectedCategory = null;
+let currentPage = 1;
 
 // DOM refs
 const categoriesDiv    = document.getElementById('categories');
@@ -29,8 +30,10 @@ function makeBtn(cat) {
   btn.classList.toggle('active', selectedCategory === cat);
   btn.onclick = () => {
     selectedCategory = (selectedCategory === cat ? null : cat);
+    searchInput.value = ''; // Clear search input if category is selected
+    currentPage = 1; // Reset page
     renderCategories();
-    fetchNews();
+    fetchNews(currentPage);
   };
   return btn;
 }
@@ -40,17 +43,21 @@ toggleBtn.onclick = () => {
   renderCategories();
 };
 const API_TOKEN = "DKDU6nIVitZa9d6y85yTCs6htRzW9vKZ1BZJINtQoIM"
-async function fetchNews() {
+async function fetchNews(page = 1) {
+  
   loader.classList.remove('hidden');
   errorDiv.classList.add('hidden');
-  newsList.innerHTML = '';
+  
+  if (page === 1) newsList.innerHTML = '';
 
-  const q = encodeURIComponent(searchInput.value.trim());
-  const query = q || selectedCategory || 'news';  // Fallback to 'news' if nothing selected
+  const searchQuery = searchInput.value.trim();
+  const isSearch = !!searchQuery;
+  const query = isSearch ? searchQuery : selectedCategory || 'news';
 
   const url = new URL('https://v3-api.newscatcherapi.com/api/search');
   url.searchParams.set('q', query);
   url.searchParams.set('lang', 'en'); 
+  url.searchParams.set('page', page.toString());
 
   try {
     const res = await fetch(url, {
@@ -65,7 +72,7 @@ async function fetchNews() {
     const data = await res.json();
     const articles = data.articles || [];
 
-    if (!articles.length) {
+    if (!articles.length && page === 1) {
       newsList.innerHTML = '<li>No articles found.</li>';
     } else {
       articles.forEach(a => {
@@ -83,9 +90,18 @@ async function fetchNews() {
   }
 }
 
-refreshBtn.onclick = fetchNews;
+refreshBtn.onclick = () => {
+  currentPage++;
+  fetchNews(currentPage);
+};
+
 searchInput.addEventListener('keyup', e => {
-  if (e.key === 'Enter') fetchNews();
+  if (e.key === 'Enter') {
+    selectedCategory = null; // Clear category if searching
+    currentPage = 1;
+    renderCategories(); // To update UI
+    fetchNews(currentPage);
+  }
 });
 
 // Init
