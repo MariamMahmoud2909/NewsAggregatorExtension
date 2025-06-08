@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Mobasher Quick Launcher",
+  "version": "1.0",
+  "description": "Search, filter by categoryand get real-time news updates, trending articles, and notifications!",
+    "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/logo.jpeg"
+  },
+  "permissions": [
+    "storage",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://localhost:7291/*"
+  ],
+  "background": {
+    "service_worker": "popup.js"
+  }
+}

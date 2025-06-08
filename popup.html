@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mobasher Quick</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+
+    <div class="search-wrapper">
+      <input id="search-input" type="text" placeholder="🔍 Search news..." />
+    </div>
+
+    <div id="categories" class="category-container"></div>
+    <button id="toggleCategories" class="toggle-btn">See more ▾</button>
+    <button id="refresh-btn" class="refresh-btn">🔄 Refresh News</button>
+    <div id="loader" class="spinner hidden"></div>
+    <div id="error" class="error hidden">Error fetching news.</div>
+    <ul id="news-list"></ul>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
